@@ -14,25 +14,31 @@
 ################################################################################
 Profiles:
 
-    FourOrgsTradeOrdererGenesis:
+    FourOrgsCommerceOrdererGenesis:
         Capabilities:
             <<: *ChannelCapabilities
         Orderer:
             <<: *OrdererDefaults
             Organizations:
-                # - *SampleOrdererOrg // ici ajoutez vos orderOrgs pour ce réseau 
+                - *CommerceOrdererOrg
             Capabilities:
                 <<: *OrdererCapabilities
         Consortiums:
-            EcommerceConsortium:
+            CommerceConsortium:
                 Organizations:
-                    # - *SampleOrg //ici ajoutez vos Orgs pour ce réseau 
-    FourOrgsTradeChannel:
-        Consortium: EcommerceConsortium
+                    - *BuyerOrg
+                    - *SellerOrg
+                    - *ShipperOrg
+                    - *FinanceOrg
+    FourOrgsCommerceChannel:
+        Consortium: CommerceConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                    # - *SampleOrg //ici ajoutez vos Orgs pour ce channel 
+                - *BuyerOrg
+                - *SellerOrg
+                - *ShipperOrg
+                - *FinanceOrg
             Capabilities:
                 <<: *ApplicationCapabilities
 
@@ -48,34 +54,87 @@ Organizations:
 
     # SampleOrg defines an MSP using the sampleconfig.  It should never be used
     # in production but may be used as a template for other definitions
-    - &SampleOrdererOrg
+    - &CommerceOrdererOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: # add name 
+        Name: CommerceOrdererOrg
 
         # ID to load the MSP definition as
-        ID: # add msp ID 
+        ID: CommerceOrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: # add msp directory for this org 
+        MSPDir: crypto-config/ordererOrganizations/commerce.com/msp
 
-    - &SampleOrg
+    - &BuyerOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: # add name 
+        Name: BuyerOrgMSP
 
         # ID to load the MSP definition as
-        ID: # add msp ID 
+        ID: BuyerOrgMSP
 
-        MSPDir: # add msp directory for this Org 
+        MSPDir: crypto-config/peerOrganizations/buyerorg.commerce.com/msp
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: # add anchor peer name for this Org 
+            - Host: peer0.buyerorg.commerce.com
               Port: 7051
 
+    - &SellerOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: SellerOrgMSP
+
+        # ID to load the MSP definition as
+        ID: SellerOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/sellerorg.commerce.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.sellerorg.commerce.com
+              Port: 7051
+
+
+    - &ShipperOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: ShipperOrgMSP
+
+        # ID to load the MSP definition as
+        ID: ShipperOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/shipperorg.commerce.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.shipperorg.commerce.com
+              Port: 7051
+
+
+
+    - &FinanceOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: FinanceOrgMSP
+
+        # ID to load the MSP definition as
+        ID: FinanceOrgMSP
+
+        MSPDir: crypto-config/peerOrganizations/financeorg.commerce.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: peer0.financeorg.commerce.com
+              Port: 7051
 
 ################################################################################
 #
@@ -92,7 +151,7 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-       # add orderer address - orderer.trade.com:7050 
+        - orderer.commerce.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
